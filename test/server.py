@@ -14,6 +14,7 @@ import asyncio
 from xy_stdio_request_base.Base import Base
 from xy_string.utils import is_empty_string
 from datetime import datetime
+from xy_stdio_request_base.Task import ErrorTask, InputTask, OutputTask
 
 
 def printf(text):
@@ -31,29 +32,77 @@ class ServerBase(Base):
     output_text = None
     error_text = None
 
-    def on_output(self, output_text: str):
+    # def on_output(self, output_text: str):
+    #     self.output_text = output_text
+    #     self.print_text(
+    #         "output",
+    #         self.output_text,
+    #     )
+    #     return super().on_output(self.output_text)
+
+    # def on_input(self, input_text: str):
+    #     self.input_text = input_text
+    #     self.print_text(
+    #         "input",
+    #         self.input_text,
+    #     )
+    #     return super().on_input(self.input_text)
+
+    # def on_error(self, error_text: str):
+    #     self.error_text = error_text
+    #     self.print_text(
+    #         "error",
+    #         self.error_text,
+    #     )
+    #     return super().on_error(self.error_text)
+
+    def on_output(self, output_text: str, task: OutputTask):
         self.output_text = output_text
         self.print_text(
             "output",
             self.output_text,
         )
-        return super().on_output(self.output_text)
+        return super().on_output(self.output_text, task)
 
-    def on_input(self, input_text: str):
+    # def on_output(self, output_text: str):
+    #     self.output_text = output_text
+    #     self.print_text(
+    #         "output",
+    #         self.output_text,
+    #     )
+    #     return super().on_output(self.output_text, ) # type: ignore
+
+    def on_input(self, input_text: str, task: InputTask):
         self.input_text = input_text
         self.print_text(
             "input",
             self.input_text,
         )
-        return super().on_input(self.input_text)
+        return super().on_input(self.input_text, task)
 
-    def on_error(self, error_text: str):
+    # def on_input(self, input_text: str):
+    #     self.input_text = input_text
+    #     self.print_text(
+    #         "input",
+    #         self.input_text,
+    #     )
+    #     return super().on_input(self.input_text)
+
+    def on_error(self, error_text: str, task: ErrorTask):
         self.error_text = error_text
         self.print_text(
             "error",
             self.error_text,
         )
-        return super().on_error(self.error_text)
+        return super().on_error(self.error_text, task)
+
+    # def on_error(self, error_text: str):
+    #     self.error_text = error_text
+    #     self.print_text(
+    #         "error",
+    #         self.error_text,
+    #     )
+    #     return super().on_error(self.error_text)
 
     def print_text(self, title: str, text: str):
         if not is_empty_string(text):

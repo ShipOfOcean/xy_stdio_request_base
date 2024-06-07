@@ -12,12 +12,11 @@ __doc__ = "client"
 """
 
 from pathlib import Path
-from socket import timeout
 import time
 from xy_stdio_request_base.Base import Base
+from xy_stdio_request_base.Task import ErrorTask, InputTask, OutputTask
 from xy_string.utils import is_empty_string
 from subprocess import Popen, PIPE
-from asyncio import wait_for
 from datetime import datetime
 
 
@@ -57,7 +56,7 @@ class ClientBase(Base):
                 universal_newlines=True,
             )
             if self.process:
-                self.stdin = self.process.stdin
+                self.stdin = self.process.stdin # type: ignore
                 self.stdout = self.stdout_file
                 self.stderr = self.stderr_file
             else:
@@ -76,29 +75,53 @@ class ClientBase(Base):
         self.write_output(f"start output from client {self.identifier}")
         self.write_error(f"start error from client {self.identifier}")
 
-    def on_output(self, output_text: str):
+    def on_output(self, output_text: str, task: OutputTask):
         self.output_text = output_text
         self.print_text(
             "output",
             self.output_text,
         )
-        return super().on_output(self.output_text)
+        return super().on_output(self.output_text, task)
 
-    def on_input(self, input_text: str):
+    # def on_output(self, output_text: str):
+    #     self.output_text = output_text
+    #     self.print_text(
+    #         "output",
+    #         self.output_text,
+    #     )
+    #     return super().on_output(self.output_text, ) # type: ignore
+
+    def on_input(self, input_text: str, task: InputTask):
         self.input_text = input_text
         self.print_text(
             "input",
             self.input_text,
         )
-        return super().on_input(self.input_text)
+        return super().on_input(self.input_text, task)
 
-    def on_error(self, error_text: str):
+    # def on_input(self, input_text: str):
+    #     self.input_text = input_text
+    #     self.print_text(
+    #         "input",
+    #         self.input_text,
+    #     )
+    #     return super().on_input(self.input_text)
+
+    def on_error(self, error_text: str, task: ErrorTask):
         self.error_text = error_text
         self.print_text(
             "error",
             self.error_text,
         )
-        return super().on_error(self.error_text)
+        return super().on_error(self.error_text, task)
+
+    # def on_error(self, error_text: str):
+    #     self.error_text = error_text
+    #     self.print_text(
+    #         "error",
+    #         self.error_text,
+    #     )
+    #     return super().on_error(self.error_text)
 
     def print_text(self, title: str, text: str):
         if not is_empty_string(text):

@@ -117,9 +117,7 @@ class Task:
 
     async def run(self):
         arguments = self.parse_arguments()
-        print("async_run")
         if self.write_io:
-            print("write_io")
             try:
                 if isinstance(self.write_io, StreamWriter):
                     if self.encoding and isinstance(self.encoding, str):
@@ -139,14 +137,12 @@ class Task:
                             self.write_io, "flush"
                         ) else None
             except Exception as exception:
-                logging.error(f"exception: {exception}")
+                logging.error(f"exception: {exception} write_io {self.write_io}")
                 pass
         if self.read_io:
-            
             try:
                 if isinstance(self.read_io, StreamReader):
                     data = await self.read_io.readline()
-                    print(f"read_io StreamReader => {data}")
                     if isinstance(data, bytes):
                         if self.encoding and isinstance(self.encoding, str):
                             self.data = data.decode(self.encoding)
@@ -155,14 +151,13 @@ class Task:
                 else:
                     if hasattr(self.read_io, "isatty") and not self.read_io.isatty():
                         data = self.read_io.readline()
-                        print(f"read_io => {self.read_io} {data}")
                         if isinstance(data, bytes):
                             if self.encoding and isinstance(self.encoding, str):
                                 self.data = data.decode(self.encoding)
                             else:
                                 self.data = data.decode()
             except Exception as exception:
-                logging.error(f"exception {exception}")
+                logging.error(f"exception {exception} read_io {self.read_io}")
                 pass
 
 
